@@ -1,0 +1,571 @@
+// package com.LaptopProject.Laptop;
+
+// import java.util.Scanner;
+
+// import javax.persistence.Entity;
+// import javax.persistence.Id;
+
+// import lombok.AllArgsConstructor;
+// import lombok.Data;
+// import lombok.NoArgsConstructor;
+
+// @Entity
+// @Data
+// @NoArgsConstructor
+// @AllArgsConstructor
+
+// public class Laptop {
+//     @Id
+//     private int laptop_id;
+//     private String laptop_name;
+//     private double laptop_price;
+//     private String laptop_color;
+//     private String laptop_os;
+//     private String laptop_ram;
+//     private String laptop_storage;
+
+//     public void acceptLaptop() {
+
+//         Scanner sc = new Scanner(System.in);
+
+//         System.out.println("Enter Laptop Id : ");
+//         laptop_id = sc.nextInt();
+
+//         sc.nextLine();
+
+//         System.out.println("Enter Laptop Name : ");
+//         laptop_name = sc.nextLine();
+
+//         System.out.println("Enter Laptop Price : ");
+//         laptop_price = sc.nextDouble();
+
+//         sc.nextLine();
+
+//         System.out.println("Enter Laptop Color : ");
+//         laptop_color = sc.nextLine();
+
+//         System.out.println("Enter Laptop OS : ");
+//         laptop_os = sc.nextLine();
+
+//         System.out.println("Enter Laptop RAM : ");
+//         laptop_ram = sc.nextLine();
+
+//         System.out.println("Enter Laptop Storage : ");
+//         laptop_storage = sc.nextLine();
+//     }
+// }
+
+
+
+// package com.LaptopProject.LaptopDAO;
+
+// import com.LaptopProject.Laptop.Laptop;
+
+// public interface LaptopDAO {
+
+//     public void showAllLaptop();
+
+//     public Laptop getLaptopById(int laptop_id);
+
+//     public void insertLaptop(Laptop laptop);
+
+//     public void updateLaptop(Laptop laptop);
+
+//     public void deleteLaptop(int laptop_id);
+
+//     // task's
+//     public void displayAllLaptops();
+
+//     public void displayLaptopNames();
+
+//     public void displayLaptopNameAndPrice();
+
+//     public void findLaptopById(int laptop_id);
+
+//     public void findLaptopsByColor(String color);
+
+//     public void findLaptopsByOS(String os);
+
+//     public void findLaptopsByRAM(String ram);
+
+//     public void findLaptopsByStorage(String storage);
+
+//     public void findLaptopsAbovePrice(double price);
+
+//     public void findLaptopsBetweenPrice(double minPrice, double maxPrice);
+// }
+
+
+// package com.LaptopProject.LaptopDAOIMP;
+
+// import java.util.List;
+
+// import org.hibernate.Session;
+// import org.hibernate.Transaction;
+// import org.hibernate.query.Query;
+
+// import com.LaptopProject.Laptop.Laptop;
+// import com.LaptopProject.LaptopDAO.LaptopDAO;
+
+// public class LaptopDAOIMP implements LaptopDAO {
+
+//     public static Session getSession() {
+
+//         return new org.hibernate.cfg.Configuration()
+//                 .configure()
+//                 .buildSessionFactory()
+//                 .openSession();
+//     }
+
+//     @Override
+//     public void showAllLaptop() {
+
+//         Session session = LaptopDAOIMP.getSession();
+
+//         String hql = "FROM Laptop";
+
+//         Query<Laptop> query = session.createQuery(hql, Laptop.class);
+
+//         List<Laptop> laptop_list = query.getResultList();
+
+//         for (Laptop laptop : laptop_list) {
+//             System.out.println(laptop);
+//         }
+
+//         session.close();
+//     }
+
+//     @Override
+//     public Laptop getLaptopById(int id) {
+//         Session session = LaptopDAOIMP.getSession();
+
+//         String hql = "FROM Laptop l WHERE l.laptop_id = :laptop_id";
+
+//         Query<Laptop> query = session.createQuery(hql, Laptop.class);
+//         query.setParameter("laptop_id", id);
+//         Laptop laptop = query.uniqueResult();
+
+//         session.close();
+
+//         return laptop;
+//     }
+
+//     @Override
+//     public void insertLaptop(Laptop laptop) {
+//         Session session = LaptopDAOIMP.getSession();
+//         Transaction transaction = session.beginTransaction();
+
+//         session.persist(laptop);
+//         transaction.commit();
+//         session.close();
+
+//         System.out.println("Laptop Inserted Successfully..!");
+//     }
+
+//     @Override
+//     public void updateLaptop(Laptop laptop) {
+
+//         Session session = LaptopDAOIMP.getSession();
+//         Transaction transaction = session.beginTransaction();
+
+//         String hql = "UPDATE Laptop SET "
+//                 + "laptop_name = :name, "
+//                 + "laptop_price = :price, "
+//                 + "laptop_color = :color, "
+//                 + "laptop_os = :os, "
+//                 + "laptop_ram = :ram, "
+//                 + "laptop_storage = :storage "
+//                 + "WHERE laptop_id = :id";
+
+//         Query query = session.createQuery(hql);
+
+//         query.setParameter("name", laptop.getLaptop_name());
+//         query.setParameter("price", laptop.getLaptop_price());
+//         query.setParameter("color", laptop.getLaptop_color());
+//         query.setParameter("os", laptop.getLaptop_os());
+//         query.setParameter("ram", laptop.getLaptop_ram());
+//         query.setParameter("storage", laptop.getLaptop_storage());
+//         query.setParameter("id", laptop.getLaptop_id());
+
+//         query.executeUpdate();
+//         transaction.commit();
+//         session.close();
+
+//         System.out.println("Laptop Data Updated Successfully...!");
+//     }
+
+//     @Override
+//     public void deleteLaptop(int id) {
+
+//         Session session = LaptopDAOIMP.getSession();
+//         Transaction transaction = session.beginTransaction();
+
+//         String hql = "DELETE FROM Laptop WHERE laptop_id = :id";
+
+//         Query query = session.createQuery(hql);
+//         query.setParameter("id", id);
+//         int result = query.executeUpdate();
+
+//         if (result > 0) {
+//             transaction.commit();
+//             System.out.println("Laptop Data Deleted Successfully...!");
+//         } else {
+//             transaction.rollback();
+//             System.out.println("Laptop Id : " + id + ", Not Found..!");
+//         }
+
+//         session.close();
+//     }
+
+//     // -------- task's --------
+//     @Override
+//     public void displayAllLaptops() {
+//         Session session = LaptopDAOIMP.getSession();
+
+//         String hql = "FROM Laptop";
+
+//         Query<Laptop> query = session.createQuery(hql, Laptop.class);
+
+//         List<Laptop> laptopList = query.getResultList();
+
+//         for (Laptop laptop : laptopList) {
+//             System.out.println(laptop);
+//         }
+
+//         session.close();
+//     }
+
+//     @Override
+//     public void displayLaptopNames() {
+//         Session session = LaptopDAOIMP.getSession();
+
+//         String hql = "SELECT laptop_name FROM Laptop";
+
+//         Query<String> query = session.createQuery(hql, String.class);
+
+//         List<String> laptopNames = query.getResultList();
+
+//         for (String name : laptopNames) {
+//             System.out.println("Laptop Name : " + name);
+//         }
+
+//         session.close();
+//     }
+
+//     @Override
+//     public void displayLaptopNameAndPrice() {
+//         Session session = LaptopDAOIMP.getSession();
+
+//         String hql = "SELECT laptop_name, laptop_price FROM Laptop";
+
+//         Query<Object[]> query = session.createQuery(hql, Object[].class);
+
+//         List<Object[]> laptopList = query.getResultList();
+
+//         for (Object[] laptop : laptopList) {
+
+//             System.out.println("Laptop Name : " + laptop[0] + " | Price : ₹" + laptop[1]);
+//         }
+
+//         session.close();
+//     }
+
+//     @Override
+//     public void findLaptopById(int laptop_id) {
+//         Session session = LaptopDAOIMP.getSession();
+
+//         String hql = "FROM Laptop WHERE laptop_id = :id";
+
+//         Query<Laptop> query = session.createQuery(hql, Laptop.class);
+
+//         query.setParameter("id", laptop_id);
+
+//         Laptop laptop = query.uniqueResult();
+
+//         if (laptop != null) {
+//             System.out.println(laptop);
+//         } else {
+//             System.out.println("Laptop Id : " + laptop_id + ", Not Found..!");
+//         }
+
+//         session.close();
+//     }
+
+//     @Override
+//     public void findLaptopsByColor(String color) {
+//         Session session = LaptopDAOIMP.getSession();
+
+//         String hql = "FROM Laptop WHERE laptop_color LIKE :color";
+
+//         Query<Laptop> query = session.createQuery(hql, Laptop.class);
+
+//         query.setParameter("color", "%" + color + "%");
+
+//         List<Laptop> laptopList = query.getResultList();
+
+//         for (Laptop laptop : laptopList) {
+//             System.out.println(laptop);
+//         }
+
+//         session.close();
+//     }
+
+//     @Override
+//     public void findLaptopsByOS(String os) {
+
+//         Session session = LaptopDAOIMP.getSession();
+
+//         String hql = "FROM Laptop WHERE laptop_os = :os";
+
+//         Query<Laptop> query = session.createQuery(hql, Laptop.class);
+
+//         query.setParameter("os", os);
+
+//         List<Laptop> laptopList = query.getResultList();
+
+//         for (Laptop laptop : laptopList) {
+//             System.out.println(laptop);
+//         }
+
+//         session.close();
+//     }
+
+//     @Override
+//     public void findLaptopsByRAM(String ram) {
+
+//         Session session = LaptopDAOIMP.getSession();
+
+//         String hql = "FROM Laptop WHERE laptop_ram = :ram";
+
+//         Query<Laptop> query = session.createQuery(hql, Laptop.class);
+
+//         query.setParameter("ram", ram);
+
+//         List<Laptop> laptopList = query.getResultList();
+
+//         for (Laptop laptop : laptopList) {
+//             System.out.println(laptop);
+//         }
+
+//         session.close();
+//     }
+
+//     @Override
+//     public void findLaptopsByStorage(String storage) {
+
+//         Session session = LaptopDAOIMP.getSession();
+
+//         String hql = "FROM Laptop WHERE laptop_storage = :storage";
+
+//         Query<Laptop> query = session.createQuery(hql, Laptop.class);
+
+//         query.setParameter("storage", storage);
+
+//         List<Laptop> laptopList = query.getResultList();
+
+//         for (Laptop laptop : laptopList) {
+//             System.out.println(laptop);
+//         }
+
+//         session.close();
+//     }
+
+//     @Override
+//     public void findLaptopsAbovePrice(double price) {
+
+//         Session session = LaptopDAOIMP.getSession();
+
+//         String hql = "FROM Laptop WHERE laptop_price > :price";
+
+//         Query<Laptop> query = session.createQuery(hql, Laptop.class);
+
+//         query.setParameter("price", price);
+
+//         List<Laptop> laptopList = query.getResultList();
+
+//         for (Laptop laptop : laptopList) {
+//             System.out.println(laptop);
+//         }
+
+//         session.close();
+//     }
+
+//     @Override
+//     public void findLaptopsBetweenPrice(double minPrice, double maxPrice) {
+
+//         Session session = LaptopDAOIMP.getSession();
+
+//         String hql = "FROM Laptop WHERE laptop_price BETWEEN :minPrice AND :maxPrice";
+
+//         Query<Laptop> query = session.createQuery(hql, Laptop.class);
+
+//         query.setParameter("minPrice", minPrice);
+//         query.setParameter("maxPrice", maxPrice);
+
+//         List<Laptop> laptopList = query.getResultList();
+
+//         for (Laptop laptop : laptopList) {
+//             System.out.println(laptop);
+//         }
+
+//         session.close();
+//     }
+// }
+
+
+// package com.LaptopProject.LaptopMain;
+
+// import java.util.Scanner;
+
+// import com.LaptopProject.Laptop.Laptop;
+// import com.LaptopProject.LaptopDAO.LaptopDAO;
+// import com.LaptopProject.LaptopDAOIMP.LaptopDAOIMP;
+
+// public class LaptopMain {
+//     public static void main(String[] args) {
+
+//         Scanner sc = new Scanner(System.in);
+
+//         LaptopDAO laptopDAO = new LaptopDAOIMP();
+
+//         int choice;
+
+//         do {
+
+//             System.out.println("\n==========================================");
+//             System.out.println("          LAPTOP MANAGEMENT");
+//             System.out.println("==========================================");
+
+//             System.out.println("1.  Display all laptops");
+//             System.out.println("2.  Display only laptop names");
+//             System.out.println("3.  Display laptop name and price");
+//             System.out.println("4.  Find laptop using laptop_id");
+//             System.out.println("5.  Find laptops by color");
+//             System.out.println("6.  Find laptops by OS");
+//             System.out.println("7.  Find laptops by RAM");
+//             System.out.println("8.  Find laptops by storage");
+//             System.out.println("9.  Find laptops above a price");
+//             System.out.println("10. Find laptops within a price range");
+//             System.out.println("------------------------------------------");
+//             System.out.println("11. Insert Laptop");
+//             System.out.println("12. Update Laptop");
+//             System.out.println("13. Delete Laptop");
+//             System.out.println("14. Exit");
+//             System.out.println("==========================================");
+
+//             System.out.print("Enter your Choice : ");
+//             choice = sc.nextInt();
+
+//             switch (choice) {
+
+//                 case 1:
+//                     laptopDAO.displayAllLaptops();
+//                     break;
+
+//                 case 2:
+//                     laptopDAO.displayLaptopNames();
+//                     break;
+
+//                 case 3:
+//                     laptopDAO.displayLaptopNameAndPrice();
+//                     break;
+
+//                 case 4:
+//                     System.out.print("Enter Laptop Id : ");
+//                     int search_Id = sc.nextInt();
+
+//                     laptopDAO.findLaptopById(search_Id);
+//                     break;
+
+//                 case 5:
+//                     System.out.print("Enter Laptop Color : ");
+//                     String color = sc.next();
+
+//                     laptopDAO.findLaptopsByColor(color);
+
+//                     break;
+
+//                 case 6:
+//                     sc.nextLine();
+
+//                     System.out.print("Enter Laptop OS : ");
+//                     String os = sc.nextLine();
+
+//                     laptopDAO.findLaptopsByOS(os);
+
+//                     break;
+
+//                 case 7:
+//                     System.out.println("Enter Laptop Ram : ");
+//                     String ram = sc.next();
+
+//                     laptopDAO.findLaptopsByRAM(ram);
+//                     break;
+
+//                 case 8:
+//                     System.out.println("Enter Laptop Stronge : ");
+//                     String storage = sc.next();
+
+//                     laptopDAO.findLaptopsByStorage(storage);
+//                     break;
+
+//                 case 9:
+//                     System.out.println("Enter Minimum Price : ");
+//                     double price = sc.nextDouble();
+
+//                     laptopDAO.findLaptopsAbovePrice(price);
+//                     break;
+
+//                 case 10:
+//                     System.out.println("Enter Minimum Price : ");
+//                     double minPrice = sc.nextDouble();
+
+//                     System.out.println("Enter Maximum Price : ");
+//                     double maxPrice = sc.nextDouble();
+
+//                     laptopDAO.findLaptopsBetweenPrice(minPrice, maxPrice);
+//                     break;
+
+//                 case 11:
+//                     Laptop newLaptop = new Laptop();
+
+//                     newLaptop.acceptLaptop();
+
+//                     laptopDAO.insertLaptop(newLaptop);
+//                     break;
+
+//                 case 12:
+//                     System.out.println("\nEnter Laptop Details : ");
+
+//                     Laptop laptopUpdate = new Laptop();
+
+//                     laptopUpdate.acceptLaptop();
+
+//                     laptopDAO.updateLaptop(laptopUpdate);
+//                     break;
+
+//                 case 13:
+//                     System.out.print("Enter Id to Delete : ");
+
+//                     int deleteBy_Id = sc.nextInt();
+
+//                     laptopDAO.deleteLaptop(deleteBy_Id);
+//                     break;
+
+//                 case 14:
+//                     System.out.println("Thank You...");
+//                     System.out.println("Program Exit Successfully..!");
+//                     break;
+
+//                 default:
+//                     System.out.println("Invalid Choice..!");
+//             }
+
+//         } while (choice != 14);
+
+//         sc.close();
+//     }
+// }
+
+
+
